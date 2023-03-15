@@ -8,7 +8,6 @@ class RegistrationForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
     password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
-
     class Meta:
         model = get_user_model()
         fields = ('email', 'username', 'password',)
