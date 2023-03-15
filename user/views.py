@@ -2,24 +2,13 @@ from django.shortcuts import render, redirect
 from . import forms
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Permission
-
-
-# Create your views here.
 
 
 def registration_view(request):
     form = forms.RegistrationForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            user = form.save()
-            if form.cleaned_data.get('is_instructor') is True:
-                permission = Permission.objects.get(name='Can add course')
-            else:
-                permission = Permission.objects.get(name='Can view course')
-
-            user.user_permissions.add(permission)
-
+            form.save()
             return redirect(reverse_lazy('user:login'))
     return render(request, 'user/registration.html', {'form': form})
 
@@ -34,9 +23,8 @@ def login_user_view(request):
 
             user = authenticate(email=username, password=password)
             if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect(reverse_lazy('home:home'))
+                login(request, user)
+                return redirect(reverse_lazy('home:home'))
 
     else:
         form = forms.LoginForm()
