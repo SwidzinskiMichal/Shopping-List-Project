@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <div class="row">
+        <div class="col-md-3 col-md-offset-2">
+        </div>
+        <div class="col-md-9">
+            <h1>{{ recipe.name }}</h1>
+            <p><i>Created by: {{ recipe.owner.username }} at {{ recipe.created|date }}</i></p>
+            <p class="lead my-3">{{ recipe.description }}</p>
+        </div>
+    </div>
+{% endblock %}

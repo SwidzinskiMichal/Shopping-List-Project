@@ -2,3 +2,14 @@
     width: 40px;
     height: 40px;
 }
+
+#ingredients-formset .form-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+#ingredients-formset .form-row > div {
+    flex: 1;
+    margin-right: 10px;
+}
