@@ -13,3 +13,17 @@
     flex: 1;
     margin-right: 10px;
 }
+
+.custom-btn-container-ms {
+    display: inline-block;
+    margin-top: 15px;
+    margin-right: 10px;
+    margin-bottom: 30px;
+    transform: translate(219px, 0);
+}
+
+.custom-btn-container-ms-2 {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 30px;
+}

@@ -5,9 +5,22 @@
         <div class="col-md-3 col-md-offset-2">
         </div>
         <div class="col-md-9">
-            <h1>{{ recipe.name }}</h1>
-            <p><i>Created by: {{ recipe.owner.username }} at {{ recipe.created|date }}</i></p>
-            <p class="lead my-3">{{ recipe.description }}</p>
+            <h1>{{ recipes.name }}</h1>
+            <p><i>Created by: {{ recipes.owner.username }} at {{ recipes.created.date }}</i></p>
+            <p class="lead my-3">{{ recipes.description }}</p>
+            <h2>Ingredients: </h2>
+            {% for recipe_ingredient in recipe_ingredients %}
+                {% if recipe_ingredient.recipe_id == recipes.id %}
+                    <li>{{ recipe_ingredient.quantity }} {{ recipe_ingredient.unit.name }} - {{ recipe_ingredient.ingredient.name }}</li>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="custom-btn-container-ms">
+            {% if user.is_authenticated %}
+                <a class="btn btn-warning" href="{% url 'recipes:add_ingredients' pk=recipes.id %}" >Add Ingredients</a>
+                <a class="btn btn-primary" href="{% url 'recipes:recipe_edit' pk=recipes.id %}" >Edit Recipe</a>
+                <a class="btn btn-danger" href="{% url 'recipes:recipe_delete' pk=recipes.id %}" >Delete Recipe</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

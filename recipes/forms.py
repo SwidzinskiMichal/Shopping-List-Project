@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipes
+from .models import Recipes, Ingredients, Units
 
 
 class RecipeForm(forms.ModelForm):
@@ -21,5 +21,12 @@ class RecipeForm(forms.ModelForm):
             recipe.owner = self.request.user
         if commit:
             recipe.save()
-            self.save_m2m()
         return recipe
+
+
+class RecipeIngredientForm(forms.Form):
+    ingredients = forms.ModelChoiceField(queryset=Ingredients.objects.all())
+    quantity = forms.DecimalField()
+    unit = forms.ChoiceField(choices=[(unit.id, unit.name) for unit in Units.objects.all()])
+
+
