@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from .forms import RecipeForm, RecipeIngredientForm
+from django.urls import reverse_lazy, reverse
+from .forms import RecipeForm, RecipeIngredientForm, RemoveIngredientForm
 from . import models
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from .models import Recipes, RecipeIngredients, Units
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .permissions import OwnerRequiredMixin
+
 
 def recipe_add(request):
     if request.method == 'POST':
@@ -35,9 +38,10 @@ class RecipesDetailView(DetailView):
         return context
 
 
-class RecipeDeleteView(DeleteView):
+class RecipeDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     model = models.Recipes
     success_url = reverse_lazy('recipes:recipe_list')
+    login_url = reverse_lazy('user:login')
     template_name = 'recipes/recipe_delete.html'
     context_object_name = 'recipe'
 
@@ -62,13 +66,31 @@ def add_ingredients(request, pk):
     return render(request, 'recipes/add_ingredients.html', context)
 
 
-def recipe_edit(request, pk):
-    recipe = Recipes.objects.get(pk=pk)
+def delete_ingredients(request, pk):
+    recipe = Recipes.objects.get(id=pk)
+    recipe_ingredients = RecipeIngredients.objects.filter(recipe_id=pk)
     if request.method == 'POST':
-        form = RecipeForm(request.POST, instance=recipe)
+        form = RemoveIngredientForm(pk, request.POST)
+        selected_ingredients = request.POST.getlist('ingredients')
+        print(selected_ingredients)
         if form.is_valid():
-            form.save()
-            return redirect(f'/recipes/recipe/{pk}/', pk=recipe.id)
+            selected_ingredients = request.POST.getlist('ingredients')
+            RecipeIngredients.objects.filter(pk__in=selected_ingredients).delete()
+            messages.success(request, 'Ingredient removed successfully.')
+            return redirect(f'/recipes/recipe/{pk}/delete_ingredients', pk=recipe.id)
     else:
-        form = RecipeForm(instance=recipe)
-    return render(request, 'recipes/recipe_edit.html', {'form': form})
+        form = RemoveIngredientForm(pk)
+    context = {'form': form, 'recipe': recipe, 'recipe_ingredients': recipe_ingredients}
+    return render(request, 'recipes/delete_ingredients.html', context)
+
+
+class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
+    model = models.Recipes
+    fields = ('name', 'description', 'prep_method')
+    template_name = 'recipes/recipe_edit.html'
+    login_url = reverse_lazy('user:login')
+    context_object_name = 'recipe'
+
+    def get_success_url(self):
+        pk = self.kwargs.get('pk')
+        return reverse('recipes:recipe_details', kwargs={'pk': pk})

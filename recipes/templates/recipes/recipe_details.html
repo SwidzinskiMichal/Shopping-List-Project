@@ -16,8 +16,8 @@
             {% endfor %}
         </div>
         <div class="custom-btn-container-ms">
-            {% if user.is_authenticated %}
-                <a class="btn btn-warning" href="{% url 'recipes:add_ingredients' pk=recipes.id %}" >Add Ingredients</a>
+            {% if user.is_authenticated and recipes.owner == request.user %}
+                <a class="btn btn-warning" href="{% url 'recipes:add_ingredients' pk=recipes.id %}" >Edit Ingredients</a>
                 <a class="btn btn-primary" href="{% url 'recipes:recipe_edit' pk=recipes.id %}" >Edit Recipe</a>
                 <a class="btn btn-danger" href="{% url 'recipes:recipe_delete' pk=recipes.id %}" >Delete Recipe</a>
             {% endif %}

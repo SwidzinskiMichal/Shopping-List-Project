@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipes, Ingredients, Units
+from .models import Recipes, Ingredients, Units, RecipeIngredients
 
 
 class RecipeForm(forms.ModelForm):
@@ -28,5 +28,15 @@ class RecipeIngredientForm(forms.Form):
     ingredients = forms.ModelChoiceField(queryset=Ingredients.objects.all())
     quantity = forms.DecimalField()
     unit = forms.ChoiceField(choices=[(unit.id, unit.name) for unit in Units.objects.all()])
+
+
+class RemoveIngredientForm(forms.Form):
+    def __init__(self, pk, *args, **kwargs):
+        super(RemoveIngredientForm, self).__init__(*args, **kwargs)
+        queryset = RecipeIngredients.objects.filter(recipe_id=pk)
+        self.fields['ingredients'] = forms.ModelMultipleChoiceField(queryset)
+
+
+
 
 
