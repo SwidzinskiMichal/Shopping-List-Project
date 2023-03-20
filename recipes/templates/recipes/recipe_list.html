@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <div class="row">
+        <div class="col">
+            <div class="card-group">
+                {% for recipe in recipes %}
+                    <div class="card mb-3 me-3" style="max-width: 18rem;">
+                        <img src="{{ recipe.recipe_image.url }}" class="card-img-top" alt="{{ recipe.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.name }}</h5>
+                            <p class="card-text">{{ recipe.description }}</p>
+                            <a href="{% url 'recipes:recipe_details' pk=recipe.pk %}" class="btn btn-primary">See
+                                recipe</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <h2>No recipes found.</h2>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
