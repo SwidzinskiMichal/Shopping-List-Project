@@ -7,6 +7,37 @@ from .models import Recipes, RecipeIngredients, Units
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .permissions import OwnerRequiredMixin
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+
+def shopping_list_pdf(request, pk):
+    recipe = Recipes.objects.get(id=pk)
+    buffer = io.BytesIO()
+    canv = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
+
+    text_object =canv.beginText()
+    text_object.setTextOrigin(inch, inch)
+    text_object.setFont("Helvetica", 12)
+
+    lines = []
+    ingredients_list = RecipeIngredients.objects.filter(recipe_id=pk)
+    for ingredient in ingredients_list:
+        line = f"- {ingredient.quantity} {ingredient.unit.name} {ingredient.ingredient.name}"
+        lines.append(line)
+
+    for line in lines:
+        text_object.textLine(line)
+
+    canv.drawText(text_object)
+    canv.showPage()
+    canv.save()
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True, filename='ShoppingList.pdf')
 
 
 def recipe_add(request):
