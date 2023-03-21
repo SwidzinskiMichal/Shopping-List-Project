@@ -3,3 +3,6 @@ Scripts
 venv
 db.sqlite3
 config/local_settings.py
+.pytest_cache
+*/__pycache__/*
+*__pycache__/*
