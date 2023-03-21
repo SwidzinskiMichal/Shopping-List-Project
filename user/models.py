@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 # Manager for the Account class
 class AccountManager(BaseUserManager):
 
+    # Function for creation and saving of a user into db
     def create_user(self, email, username, password=None):
         if not email:
             raise ValueError('Please provide an email!')
@@ -29,5 +30,6 @@ class Account(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+    # function representing class object as string
     def __str__(self):
         return self.email
