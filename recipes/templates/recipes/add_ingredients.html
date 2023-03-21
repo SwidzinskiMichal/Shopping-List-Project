@@ -17,6 +17,7 @@
         <div class="custom-btn-container-ms-2">
         <button type="submit" class="btn btn-success">Add</button>
         <a class="btn btn-danger" href="{% url 'recipes:delete_ingredients' pk=recipe.id %}" >Delete Ingredients</a>
+        <a class="btn btn-primary" href="{% url 'recipes:recipe_details' pk=recipe.id %}" >Back</a>
         </div>
     </form>
     <h2>Ingredients:</h2>
