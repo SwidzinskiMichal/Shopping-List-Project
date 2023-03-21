@@ -9,6 +9,7 @@
         {{ form|crispy }}
         <div>
         <button type="submit" class="btn btn-warning">Update</button>
+        <a class="btn btn-primary" href="{% url 'recipes:recipe_details' pk=recipe.id %}" >Back</a>
         </div>
     </form>
 {% endblock %}

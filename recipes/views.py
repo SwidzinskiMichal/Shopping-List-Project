@@ -14,8 +14,8 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
 
+# view function for saving shopping list as pdf file
 def shopping_list_pdf(request, pk):
-    recipe = Recipes.objects.get(id=pk)
     buffer = io.BytesIO()
     canv = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
 
@@ -40,35 +40,40 @@ def shopping_list_pdf(request, pk):
     return FileResponse(buffer, as_attachment=True, filename='ShoppingList.pdf')
 
 
+# View with form to add new recipes
 def recipe_add(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST, request=request)
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.save()
-            return redirect(reverse_lazy('recipes:recipe_add'))
+            return redirect(reverse('recipes:recipe_details', args=[recipe.pk]))
     else:
         form = RecipeForm(request=request)
     return render(request, 'recipes/add_recipe.html', {'form': form})
 
 
+# class view for list of all recipes inheriting after ListView
 class RecipeListView(ListView):
     model = models.Recipes
     template_name = 'recipes/recipe_list.html'
     context_object_name = 'recipes'
 
 
+# class view for details of each recipe, inheriting after DetailView
 class RecipesDetailView(DetailView):
     model = models.Recipes
     template_name = 'recipes/recipe_details.html'
     context_object_name = 'recipes'
 
+    # Function to get additional context object of RecipeIngredients
     def get_context_data(self, **kwargs):
         context = super(RecipesDetailView, self).get_context_data(**kwargs)
         context['recipe_ingredients'] = RecipeIngredients.objects.all()
         return context
 
 
+# class view to delete a recipe with additional premissions
 class RecipeDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     model = models.Recipes
     success_url = reverse_lazy('recipes:recipe_list')
@@ -77,6 +82,7 @@ class RecipeDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     context_object_name = 'recipe'
 
 
+# function view to add ingredients to recipes
 def add_ingredients(request, pk):
     recipe = Recipes.objects.get(id=pk)
     recipe_ingredients = RecipeIngredients.objects.filter(recipe_id=pk)
@@ -97,6 +103,7 @@ def add_ingredients(request, pk):
     return render(request, 'recipes/add_ingredients.html', context)
 
 
+# function view to delete ingredients using multi select
 def delete_ingredients(request, pk):
     recipe = Recipes.objects.get(id=pk)
     recipe_ingredients = RecipeIngredients.objects.filter(recipe_id=pk)
@@ -115,6 +122,7 @@ def delete_ingredients(request, pk):
     return render(request, 'recipes/delete_ingredients.html', context)
 
 
+# class view to update the recipes with additional permissions
 class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
     model = models.Recipes
     fields = ('name', 'description', 'prep_method')
@@ -122,6 +130,7 @@ class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
     login_url = reverse_lazy('user:login')
     context_object_name = 'recipe'
 
+    # function to redirect on successful update to corrected recipe
     def get_success_url(self):
         pk = self.kwargs.get('pk')
         return reverse('recipes:recipe_details', kwargs={'pk': pk})

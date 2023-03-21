@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import AccessMixin
 
 
+# Custom permission so that only owner can interact with specific views
 class OwnerRequiredMixin(AccessMixin):
 
     def dispatch(self, request, *args, **kwargs):

@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 
 
+# View function for registration with validation
 def registration_view(request):
     form = forms.RegistrationForm(request.POST or None)
     if request.method == 'POST':
@@ -13,6 +14,7 @@ def registration_view(request):
     return render(request, 'user/registration.html', {'form': form})
 
 
+# View function for logging in with form validation
 def login_user_view(request):
     if request.method == 'POST':
         form = forms.LoginForm(request, request.POST)
@@ -31,6 +33,7 @@ def login_user_view(request):
     return render(request, 'user/login.html', {'form': form})
 
 
+# View for logout and redirect to home page
 def logout_user(request):
     logout(request)
     return redirect(reverse_lazy('home:home'))

@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-
+# Model containing the ingredients
 class Ingredients(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
 
-
+# Model containing the units for the ingredients
 class Units(models.Model):
     name = models.CharField(max_length=255)
 
@@ -16,6 +16,7 @@ class Units(models.Model):
         return self.name
 
 
+# Model containing the created recipes
 class Recipes(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
@@ -31,6 +32,7 @@ class Recipes(models.Model):
         ordering = ('-created',)
 
 
+# Relation model between ingredients, recipes and units
 class RecipeIngredients(models.Model):
     recipe = models.ForeignKey(Recipes, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredients, on_delete=models.CASCADE)
