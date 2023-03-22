@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from .forms import RecipeForm, RecipeIngredientForm, RemoveIngredientForm
+from .forms import RecipeForm, RecipeIngredientForm, RemoveIngredientForm, RecipePlanForm
 from . import models
-from django.views.generic import ListView, DetailView, DeleteView, UpdateView
-from .models import Recipes, RecipeIngredients, Units
+from django.views.generic import ListView, DetailView, DeleteView, UpdateView, CreateView
+from .models import Recipes, RecipeIngredients, Units, RecipePlan
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .permissions import OwnerRequiredMixin
@@ -15,7 +15,7 @@ from reportlab.lib.pagesizes import letter
 
 
 # view function for saving shopping list as pdf file
-def shopping_list_pdf(request, pk):
+def shopping_list_pdf(request, pk, is_plan="False"):
     buffer = io.BytesIO()
     canv = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
 
@@ -24,10 +24,25 @@ def shopping_list_pdf(request, pk):
     text_object.setFont("Helvetica", 12)
 
     lines = []
-    ingredients_list = RecipeIngredients.objects.filter(recipe_id=pk)
-    for ingredient in ingredients_list:
-        line = f"- {ingredient.quantity} {ingredient.unit.name} {ingredient.ingredient.name}"
+    if is_plan == "True":
+        recipe_list = RecipePlan.objects.get(pk=pk).recipes.all()
+        ingredients_list = RecipeIngredients.objects.filter(recipe_id__in=recipe_list)
+        for recipe_id in recipe_list:
+            recipe = Recipes.objects.get(pk=recipe_id.id)
+            line = f"Shopping list for {recipe.name}"
+            lines.append(line)
+            for ingredient in (recipe_ingredient for recipe_ingredient in ingredients_list if recipe_ingredient.recipe_id == recipe_id.id):
+                line = f"- {ingredient.quantity} {ingredient.unit.name} {ingredient.ingredient.name}"
+                lines.append(line)
+    else:
+        ingredients_list = RecipeIngredients.objects.filter(recipe_id=pk)
+        recipe = Recipes.objects.get(pk=pk)
+        line = f"Shopping list for {recipe.name}"
         lines.append(line)
+
+        for ingredient in ingredients_list:
+            line = f"- {ingredient.quantity} {ingredient.unit.name} {ingredient.ingredient.name}"
+            lines.append(line)
 
     for line in lines:
         text_object.textLine(line)
@@ -73,7 +88,7 @@ class RecipesDetailView(DetailView):
         return context
 
 
-# class view to delete a recipe with additional premissions
+# class view to delete a recipe with additional permissions
 class RecipeDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     model = models.Recipes
     success_url = reverse_lazy('recipes:recipe_list')
@@ -134,3 +149,61 @@ class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
     def get_success_url(self):
         pk = self.kwargs.get('pk')
         return reverse('recipes:recipe_details', kwargs={'pk': pk})
+
+
+# class view for plan creation
+class AddPlanView(LoginRequiredMixin, CreateView):
+    model = models.RecipePlan
+    form_class = RecipePlanForm
+    template_name = 'recipes/add_plan.html'
+    login_url = reverse_lazy('user:login')
+    success_url = reverse_lazy('recipes:plan_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
+# class view for plan list
+class PlanListView(ListView):
+    model = models.RecipePlan
+    template_name = 'recipes/plan_list.html'
+    context_object_name = 'plans'
+
+
+# class view for plan details
+class PlanDetailView(DetailView):
+    model = models.RecipePlan
+    template_name = 'recipes/plan_details.html'
+    context_object_name = 'plans'
+
+    # Function to get additional context object of RecipeIngredients
+    def get_context_data(self, **kwargs):
+        context = super(PlanDetailView, self).get_context_data(**kwargs)
+        context['recipe_ingredients'] = RecipeIngredients.objects.all()
+        plan = RecipePlan.objects.get(pk=self.kwargs['pk'])
+        context['plan_recipes'] = plan.recipes.all()
+        return context
+
+
+# class view to delete a plan with additional permissions
+class PlanDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
+    model = models.RecipePlan
+    success_url = reverse_lazy('recipes:plan_list')
+    login_url = reverse_lazy('user:login')
+    template_name = 'recipes/plan_delete.html'
+    context_object_name = 'plan'
+
+
+# class view to update the recipes with additional permissions
+class PlanUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
+    model = models.RecipePlan
+    fields = ('name', 'description', 'recipes')
+    template_name = 'recipes/plan_edit.html'
+    login_url = reverse_lazy('user:login')
+    context_object_name = 'plan'
+
+    # function to redirect on successful update to corrected recipe
+    def get_success_url(self):
+        pk = self.kwargs.get('pk')
+        return reverse('recipes:plan_details', kwargs={'pk': pk})

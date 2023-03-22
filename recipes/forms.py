@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipes, Ingredients, Units, RecipeIngredients
+from .models import Recipes, Ingredients, Units, RecipeIngredients, RecipePlan
 
 
 # Form for recipe creation
@@ -7,7 +7,7 @@ class RecipeForm(forms.ModelForm):
     name = forms.CharField(max_length=255)
     description = forms.CharField(max_length=255)
     prep_method = forms.CharField(widget=forms.Textarea)
-    recipe_image = forms.ImageField()
+    recipe_image = forms.ImageField(required=False)
 
     # class that defines metadata for the form
     class Meta:
@@ -24,6 +24,8 @@ class RecipeForm(forms.ModelForm):
         recipe = super().save(commit=False)
         if self.request:
             recipe.owner = self.request.user
+        if not self.cleaned_data['recipe_image']:
+            recipe.recipe_image = 'recipes/placeholder.png'
         if commit:
             recipe.save()
         return recipe
@@ -44,6 +46,10 @@ class RemoveIngredientForm(forms.Form):
         self.fields['ingredients'] = forms.ModelMultipleChoiceField(queryset)
 
 
+# Form for creation of recipe plans
+class RecipePlanForm(forms.ModelForm):
+    class Meta:
+        model = RecipePlan
+        fields = ('name', 'description', 'recipes')
 
-
-
+    recipes = forms.ModelMultipleChoiceField(queryset=Recipes.objects.all())
