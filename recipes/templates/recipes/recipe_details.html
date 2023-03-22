@@ -6,7 +6,7 @@
         </div>
         <div class="col-md-9">
             <h1>{{ recipes.name }}</h1>
-            <a class="btn btn-success" href="{% url 'recipes:shopping_list_pdf' pk=recipes.id %}">Save Shopping List</a>
+            <a class="btn btn-success" href="{% url 'recipes:shopping_list_pdf' is_plan='False' pk=recipes.id %}">Save Shopping List</a>
             <p><i>Created by: {{ recipes.owner.username }} at {{ recipes.created.date }}</i></p>
             <p class="lead my-3">{{ recipes.description }}</p>
             <h2>Ingredients: </h2>

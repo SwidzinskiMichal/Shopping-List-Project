@@ -4,7 +4,7 @@
 
 {% block container %}
     <h1>Add Recipe</h1>
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
         <div>

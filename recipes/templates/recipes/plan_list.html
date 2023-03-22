@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <div class="row">
+        <div class="col">
+            <div class="card-group">
+                {% for plan in plans %}
+                    <div class="card mb-3 me-3" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ plan.name }}</h5>
+                            <p class="card-text">{{ plan.description }}</p>
+                            <a href="{% url 'recipes:plan_details' pk=plan.pk %}" class="btn btn-primary">See
+                                plan</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <h2>No plans found.</h2>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
