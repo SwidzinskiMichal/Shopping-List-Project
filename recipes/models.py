@@ -24,6 +24,7 @@ class Recipes(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='recipe_author')
     created = models.DateTimeField(auto_now_add=True)
     ingredients = models.ManyToManyField(Ingredients, through='RecipeIngredients')
+    recipe_image = models.ImageField(upload_to='recipes/', default='recipes/placeholder.png')
 
     def __str__(self):
         return self.name

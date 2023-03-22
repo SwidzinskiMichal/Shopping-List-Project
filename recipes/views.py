@@ -43,7 +43,7 @@ def shopping_list_pdf(request, pk):
 # View with form to add new recipes
 def recipe_add(request):
     if request.method == 'POST':
-        form = RecipeForm(request.POST, request=request)
+        form = RecipeForm(request.POST, request.FILES,request=request)
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.save()
@@ -125,7 +125,7 @@ def delete_ingredients(request, pk):
 # class view to update the recipes with additional permissions
 class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
     model = models.Recipes
-    fields = ('name', 'description', 'prep_method')
+    fields = ('name', 'description', 'prep_method', 'recipe_image')
     template_name = 'recipes/recipe_edit.html'
     login_url = reverse_lazy('user:login')
     context_object_name = 'recipe'
