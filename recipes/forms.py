@@ -7,11 +7,12 @@ class RecipeForm(forms.ModelForm):
     name = forms.CharField(max_length=255)
     description = forms.CharField(max_length=255)
     prep_method = forms.CharField(widget=forms.Textarea)
+    recipe_image = forms.ImageField()
 
     # class that defines metadata for the form
     class Meta:
         model = Recipes
-        fields = ('name', 'description', 'prep_method')
+        fields = ('name', 'description', 'prep_method', 'recipe_image')
 
     # method used to initialize the form object when it is created
     def __init__(self, *args, **kwargs):
