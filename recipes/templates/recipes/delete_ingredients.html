@@ -15,7 +15,7 @@
         {% csrf_token %}
         {{ form|crispy }}
         <div>
-        <button type="submit" class="btn btn-success">Delete</button>
+        <button type="submit" class="btn btn-danger">Delete</button>
         <a class="btn btn-primary" href="{% url 'recipes:add_ingredients' pk=recipe.id %}" >Back</a>
         </div>
     </form>

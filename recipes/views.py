@@ -140,7 +140,7 @@ def delete_ingredients(request, pk):
 # class view to update the recipes with additional permissions
 class RecipeUpdateView(LoginRequiredMixin,OwnerRequiredMixin, UpdateView):
     model = models.Recipes
-    fields = ('name', 'description', 'prep_method', 'recipe_image')
+    fields = ('name', 'description', 'prep_method')
     template_name = 'recipes/recipe_edit.html'
     login_url = reverse_lazy('user:login')
     context_object_name = 'recipe'
