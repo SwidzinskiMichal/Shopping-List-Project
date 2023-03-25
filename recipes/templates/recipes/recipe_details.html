@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <h1>Recipe Details</h1>
+    <div class="row">
+        <div class="col-md-3 col-md-offset-2">
+        </div>
+        <div class="col-md-9">
+            <h1>{{ recipes.name }}</h1>
+            <a class="btn btn-success" href="{% url 'recipes:shopping_list_pdf' is_plan='False' pk=recipes.id %}">Save Shopping List</a>
+            <p><i>Created by: {{ recipes.owner.username }} at {{ recipes.created.date }}</i></p>
+            <p class="lead my-3">{{ recipes.description }}</p>
+            <h2>Ingredients: </h2>
+            {% for recipe_ingredient in recipe_ingredients %}
+                {% if recipe_ingredient.recipe_id == recipes.id %}
+                    <li>{{ recipe_ingredient.quantity }} {{ recipe_ingredient.unit.name }} - {{ recipe_ingredient.ingredient.name }}</li>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="custom-btn-container-ms">
+            {% if user.is_authenticated and recipes.owner == request.user %}
+                <a class="btn btn-warning" href="{% url 'recipes:add_ingredients' pk=recipes.id %}" >Edit Ingredients</a>
+                <a class="btn btn-primary" href="{% url 'recipes:recipe_edit' pk=recipes.id %}" >Edit Recipe</a>
+                <a class="btn btn-danger" href="{% url 'recipes:recipe_delete' pk=recipes.id %}" >Delete Recipe</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

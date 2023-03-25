@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block container %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h1>Remove Ingredients</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div>
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a class="btn btn-primary" href="{% url 'recipes:add_ingredients' pk=recipe.id %}" >Back</a>
+        </div>
+    </form>
+{% endblock %}
