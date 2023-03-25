@@ -136,3 +136,16 @@ def test_plan_edit_page(client, user):
 
     assert response.status_code == 200
     assert '<h1>Modify Plan</h1>' in response.content.decode('UTF-8')
+
+
+@pytest.mark.django_db
+def test_recipe_edit_by_not_logged_user(client):
+    url = reverse('recipes:recipe_edit', kwargs={'pk': 1})
+    response = client.get(url)
+
+    assert response.status_code == 302
+
+    next_response = client.get(response.url)
+
+    assert next_response.status_code == 200
+    assert '<h1>Login</h1>' in next_response.content.decode('UTF-8')
