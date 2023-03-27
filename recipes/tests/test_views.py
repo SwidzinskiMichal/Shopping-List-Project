@@ -163,3 +163,15 @@ def test_recipe_add_by_not_logged_user(client):
     assert next_response.status_code == 200
     assert '<h1>Login</h1>' in next_response.content.decode('UTF-8')
 
+
+@pytest.mark.django_db
+def test_recipe_delete_by_not_logged_user(client):
+    url = reverse('recipes:recipe_delete', kwargs={'pk': 1})
+    response = client.get(url)
+
+    assert response.status_code == 302
+
+    next_response = client.get(response.url)
+
+    assert next_response.status_code == 200
+    assert '<h1>Login</h1>' in next_response.content.decode('UTF-8')
