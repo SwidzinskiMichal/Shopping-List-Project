@@ -64,8 +64,11 @@ def recipe_add(request):
             recipe.save()
             return redirect(reverse('recipes:recipe_details', args=[recipe.pk]))
     else:
-        form = RecipeForm(request=request)
-    return render(request, 'recipes/add_recipe.html', {'form': form})
+        if request.user.is_authenticated:
+            form = RecipeForm(request=request)
+            return render(request, 'recipes/add_recipe.html', {'form': form})
+        else:
+            return redirect(reverse('user:login'))
 
 
 # class view for list of all recipes inheriting after ListView
