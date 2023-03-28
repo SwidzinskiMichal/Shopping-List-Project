@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block container %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h1>Add Ingredients</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="custom-btn-container-ms-2">
+        <button type="submit" class="btn btn-success">Add</button>
+        <a class="btn btn-danger" href="{% url 'recipes:delete_ingredients' pk=recipe.id %}" >Delete Ingredients</a>
+        <a class="btn btn-primary" href="{% url 'recipes:recipe_details' pk=recipe.id %}" >Back</a>
+        </div>
+    </form>
+    <h2>Ingredients:</h2>
+    <ul>
+        {% for recipe_ingredient in recipe_ingredients %}
+            <li>{{ recipe_ingredient.quantity }} {{ recipe_ingredient.unit.name }} - {{ recipe_ingredient.ingredient.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

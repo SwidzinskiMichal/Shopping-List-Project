@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block container %}
+    <h1>Modify Plan</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div>
+        <button type="submit" class="btn btn-warning">Update</button>
+        <a class="btn btn-primary" href="{% url 'recipes:plan_details' pk=plan.id %}" >Back</a>
+        </div>
+    </form>
+{% endblock %}

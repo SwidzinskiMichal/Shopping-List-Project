@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block container %}
+    <form action="{% url 'recipes:recipe_delete' pk=recipe.pk  %}" method="post">
+        {% csrf_token %}
+        <h1>You are going to delete your recipe!</h1>
+        <h2 class="text-center mt-3">Are you sure you want to delete <b>{{ recipe.name }}</b></h2>
+        <div class="custom-btn-container-ms-2">
+            <button class="btn btn-danger float-left btn-lg mb-3 mt-0" type="submit">Confirm</button>
+            <a class="btn btn-primary float-right btn-lg mb-3 mt-0" href="{% url 'recipes:recipe_details' pk=recipe.pk %}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}
